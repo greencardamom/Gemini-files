@@ -1,0 +1,26 @@
+testsuite.sh invokes these steps:
+
+* Downloads test file https://archive.org/download/scenescharacters00londuoft/scenescharacters00londuoft.pdf
+* Create 20 1-page PDFs, named test_01.pdf --> test_20.pdf, split off the main PDF
+* If you have Ghostscript installed it will reduce the file size
+* It then runs the testsuites ie. uploading, listing, querying and deleting files at Gemini File API
+  If there are any problems it will report
+
+------------
+
+You can change to a different PDF by changing the URL. 
+
+	PDF_DOWNLOAD_URL="https://archive.org..."
+
+It will also require changing the query for test_01.pdf:
+
+	QUERY_TEXT="What is the image caption for the bottom image"
+	EXPECTED_ANSWER_SUBSTRING="the gravesend boat" 
+
+By default test_01.pdf is leaf #20 in the PDF. You can change in this line:
+
+	"$SPLIT_SCRIPT" "$SPLIT_BASE_NAME" 1 20 39  # ie. split PDF into 1 pages each, starting at page 20 to page 39
+
+If you want more than 20 pages modify:
+
+	EXPECTED_PDF_COUNT=20
