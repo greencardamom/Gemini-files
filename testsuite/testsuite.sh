@@ -55,6 +55,7 @@ declare key_arg=""         # Argument to pass key source to main script (--keyfi
 declare api_key_source=""  # Description of where the key was found
 declare query_target_id="" # Store the found ID for the query test
 declare delete_count=0     # Store how many files were targeted for deletion in T7
+declare user_confirmed_proceed=0
 
 #
 # Function: run_test
@@ -291,6 +292,46 @@ run_setup_checks() {
 }
 
 #
+# Function: prompt_for_deletion_confirmation
+# Purpose: Warns the user about file deletion and prompts to continue or abort.
+# Uses global: api_key_source (set during run_setup_checks)
+#
+prompt_for_deletion_confirmation() {
+    # ANSI color codes for warning (adjust or remove if not supported/desired)
+    local BOLD_RED='\e[1;31m'
+    local YELLOW='\e[33m'
+    local NC='\e[0m' # No Color
+
+    echo # Add a blank line for spacing
+    echo -e "${BOLD_RED}##################### WARNING #####################${NC}"
+    echo -e "${YELLOW}This test suite is about to DELETE ALL FILES currently present${NC}"
+    echo -e "${YELLOW}in the Google Gemini Files API account associated with:${NC}"
+    echo -e "${YELLOW}  API Key Source: '${api_key_source}'${NC}"
+    echo -e "${YELLOW}This deletion is performed multiple times during the test${NC}"
+    echo -e "${YELLOW}(initial cleanup, final cleanup, and potentially test case 9).${NC}"
+    echo -e "${BOLD_RED}This action is irreversible through this script.${NC}"
+    echo -e "${BOLD_RED}###################################################${NC}"
+    echo
+
+    local confirm=""
+    # Prompt the user, store input in REPLY (default for read)
+    read -r -p "Are you sure you want to proceed? (Type 'yes' to continue, anything else to abort): "
+    # Convert input to lowercase for case-insensitive comparison
+    confirm="${REPLY,,}"
+
+    # Check if the user explicitly typed 'yes'. Any other input aborts.
+    if [[ "$confirm" == "yes" ]]; then
+        echo "Confirmation received. Proceeding with tests..."
+        user_confirmed_proceed=1
+        echo 
+    else
+        echo "Aborting test suite execution by user request."
+        exit 1 # Exit the script immediately
+    fi
+
+}
+
+#
 # Function: run_initial_cleanup
 # Purpose: Performs initial delete of all files and verifies list is empty.
 #
@@ -338,14 +379,20 @@ run_initial_cleanup() {
 # Purpose: Trap function to delete files and generated test data on exit/error.
 #
 cleanup() {
-   echo
-   echo "--- Running Cleanup ---"
-   echo "Deleting API files (if any)..."
-   echo "yes" | "$GEMINI_SCRIPT" --delete $key_arg -v >/dev/null 2>&1 || true
-   echo "Deleting local test files..."
-   rm -f "$QUERY_TEXT_FILE" "$DOWNLOADED_PDF_NAME" "${SPLIT_BASE_NAME}_"*.pdf
-   rm -f run_test_stderr.tmp.* upload_stdout.tmp.* upload_stderr.tmp.*
-   echo "--- Cleanup Complete ---"
+    echo
+    echo "--- Running Cleanup ---"
+
+    if [[ "$user_confirmed_proceed" -eq 1 ]]; then
+        echo "Deleting API files (if any)..."
+        echo "yes" | "$GEMINI_SCRIPT" --delete $key_arg -v >/dev/null 2>&1 || true
+    else
+        echo "Skipping API file deletion in cleanup (initial prompt was aborted)."
+    fi
+    echo "Deleting local test files..."
+    rm -f "$QUERY_TEXT_FILE" "$DOWNLOADED_PDF_NAME" "${SPLIT_BASE_NAME}_"*.pdf
+    rm -f run_test_stderr.tmp.* upload_stdout.tmp.* upload_stderr.tmp.*
+    echo "--- Cleanup Complete ---"
+
 }
 
 # --- Test Case Functions ---
@@ -587,6 +634,9 @@ report_summary() {
 main() {
    # 1. Initial Setup & Checks (Passes script args like --keyfile)
    run_setup_checks "$@"
+
+   # Prompt to abort
+   prompt_for_deletion_confirmation
 
    # Initial Cleanup & Verification
    run_initial_cleanup
