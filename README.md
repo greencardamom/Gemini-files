@@ -24,7 +24,6 @@ An extensive test suite (`testsuite.sh`) is included to verify core functionalit
 * **Core Utilities:**
     * `curl`: For making API HTTP requests.
     * `jq`: For parsing JSON responses from the API.
-    * `git`: For cloning the repository (installation only).
     * Standard Unix utilities (`sed`, `tr`, `grep`, `mktemp`, `basename`, etc. - usually pre-installed).
 * **Optional Utility:**
     * `file`: Used by the `--upload` command to automatically detect MIME types. If not found, uploads will use `application/octet-stream`.
@@ -85,11 +84,11 @@ Exactly one action mode must be specified. If no action mode is given, the help 
 **Action Modes & Arguments:**
 
 * `--list [id1 id2 ...]`
-    List files. If specific file IDs (e.g., `files/xxxx` or just `xxxx`) are provided, only those files are listed (JSON output). If no IDs are provided, all files are listed (JSON output). Warnings are printed to stderr for requested IDs that are not found.
+    List files. If specific file IDs (e.g., `files/xxxx` or just `xxxx`) are provided, only those files are listed (JSON output). If no IDs are provided, all files are listed (JSON output). 
 * `--delete [id1 id2 ...]`
     Delete files. If specific file IDs are provided, only those are targeted (after validation). If no IDs are provided, all files are targeted. **Requires interactive confirmation** (`Type 'yes' to confirm`) unless input is piped (e.g., `echo "yes" | ...`).
 * `--upload <fp1> [fp2 ...]`
-    Upload one or more specified local files (`<fp1>`, `[fp2]`, etc.). Attempts to detect MIME type using the `file` command. Performs verification checks after upload attempts to ensure files become `ACTIVE`. Prints the `files/xxx` name for each successfully uploaded and verified file to stdout. Reports a summary and exits with an error code if any upload or verification fails.
+    Upload one or more specified local files (`<fp1>`, `[fp2]`, etc.). Attempts to detect MIME type using the `file` command. Performs verification checks after upload attempts to ensure files become `ACTIVE`. Prints the `files/xxx` name for each successfully uploaded and verified file to stdout. 
 * `--query <id_or_uri>`
     Query the specified previously uploaded file. Requires `--query-file`. The identifier can be the short name (`files/xxx`), just the ID (`xxx`), or the full File API URI (`https://.../files/xxx`).
 
