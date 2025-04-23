@@ -179,18 +179,18 @@ An integration test suite is provided in `testsuite/testsuite.sh`. It tests the 
 * Performs initial setup checks (scripts exist, dependencies exist, API key sourced).
 * **Downloads** a test PDF from archive.org.
 * **Splits** the PDF into 20 single-page files (`test_01.pdf`...) using `splitpdf.sh`.
-* **(Optional)** Attempts to reduce the size of the split PDFs using `reducesize.sh` (ignores errors from this step).
+* **(Optional)** Attempts to reduce the size of the split PDFs using `reducesize.sh`.
 * Verifies the correct number of test files were created.
-* Cleans up any pre-existing API files using `--delete` and verifies the list is empty (with retries for consistency).
-* Uploads all 20 generated test PDF files using `--upload` and verifies success.
-* Looks up the API file ID for a specific test file (`test_01.pdf`).
+* Removes any pre-existing API files using `--delete` and verifies the list is empty.
+* Uploads the 20 generated test PDF files using `--upload` and verifies success.
+* Looks up the API file ID for one test file (`test_01.pdf`).
 * Tests listing all files (`--list`).
 * Tests listing a specific subset of valid files (`--list id1 id2 id3`).
 * Tests listing with one valid and one invalid ID (`--list valid fake`).
-* Tests querying the specific test file (`--query`, `--query-file`) and checks for an expected substring in the response (case-insensitive).
-* Tests deleting a specific subset of files (`--delete id1 id2`, checking only for successful command execution).
-* Tests listing files after the partial delete (checks only for successful command execution).
-* Tests deleting all remaining files (`--delete`, checking only for successful command execution).
+* Tests querying a test file (`--query`, `--query-file`) and checks for an expected substring in the response.
+* Tests deleting a specific subset of files (`--delete id1 id2`).
+* Tests listing files after the partial delete.
+* Tests deleting all remaining files (`--delete`).
 * Tests that the final file list is empty.
-* Performs final cleanup of local files (downloaded PDF, split PDFs, logs, temp files) on exit/error. **Does not delete API files during final cleanup.**
+* Performs final cleanup of local and API files on exit/error. 
 * Reports a summary of passed/failed tests and creates log files (`test_failures.log`, `test_stderr.log`) in the `testsuite` directory for debugging failures.
