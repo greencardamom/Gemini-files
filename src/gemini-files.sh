@@ -3,6 +3,7 @@
 #
 # Script: gemini-files.sh
 # Purpose: CLI utility to List, Delete, Upload, or Query files using the Google Gemini File API & Generative API
+# Repo: https://github.com/greencardamom/Gemini-files
 # Created: April 21, 2025
 # Author: GreenC + Google Gemini Advanced 2.5 Pro
 # Formatting: shfmt -i 3 -ci gemini-files.sh
